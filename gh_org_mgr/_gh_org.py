@@ -720,7 +720,7 @@ class GHorg:  # pylint: disable=too-many-instance-attributes, too-many-lines
                             try:
                                 repo = self.org.create_repo(
                                     name=repo_name,
-                                    description="Managed by github-org-manager",
+                                    description="Created by github-org-manager",
                                     private=True,
                                     has_issues=True,
                                     auto_init=True,
