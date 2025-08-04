@@ -710,6 +710,7 @@ class GHorg:  # pylint: disable=too-many-instance-attributes, too-many-lines
             for repo_name, perm in team_attrs.get("repos", {}).items():
                 repo = existing_repo_names.get(repo_name)
                 if not repo:
+
                     if self.create_repo:
                         logging.info(
                         "Repository '%s' does not exist. Creating it...", repo_name

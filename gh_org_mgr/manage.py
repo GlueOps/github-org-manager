@@ -108,9 +108,11 @@ def main():
             logging.warning("Force mode activated, will make potentially dangerous actions")
 
         org = GHorg()
-
         # Parse configuration folder, and do sanity check
         cfg_org, cfg_app, org.configured_teams = parse_config_files(args.config)
+
+        org.create_repo = cfg_app.get("create_repo", False)
+
         if not cfg_org.get("org_name"):
             logging.critical(
                 "No GitHub organisation name configured in organisation settings. Cannot continue"
