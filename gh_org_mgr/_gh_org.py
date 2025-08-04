@@ -8,6 +8,7 @@ import logging
 import sys
 from dataclasses import asdict, dataclass, field
 
+import github
 from github import (
     Auth,
     Github,
@@ -19,7 +20,6 @@ from github.GithubException import BadCredentialsException
 from github.NamedUser import NamedUser
 from github.Organization import Organization
 from github.Repository import Repository
-from github.Requester import Requester
 from github.Team import Team
 from jwt.exceptions import InvalidKeyError
 
@@ -206,8 +206,13 @@ class GHorg:  # pylint: disable=too-many-instance-attributes, too-many-lines
 
     def _is_user_authenticated_user(self, user: NamedUser) -> bool:
         """Check if a given NamedUser is the authenticated user"""
-        if user.login == self.gh.get_user().login:
-            return True
+        try:
+            if user.login == self.gh.get_user().login:
+                return True
+        except github.GithubException as e:
+            if e.status == 403 and "Resource not accessible by integration" in str(e):
+                return False
+            raise
         return False
 
     def sync_org_owners(self, dry: bool = False, force: bool = False) -> None:
