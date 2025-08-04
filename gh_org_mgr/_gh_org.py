@@ -42,6 +42,7 @@ class GHorg:  # pylint: disable=too-many-instance-attributes, too-many-lines
     gh_token: str = ""
     gh_app_id: str | int = ""
     gh_app_private_key: str = ""
+    create_repo: bool = False
     default_repository_permission: str = ""
     current_org_owners: list[NamedUser] = field(default_factory=list)
     configured_org_owners: list[str] = field(default_factory=list)
@@ -709,29 +710,37 @@ class GHorg:  # pylint: disable=too-many-instance-attributes, too-many-lines
             for repo_name, perm in team_attrs.get("repos", {}).items():
                 repo = existing_repo_names.get(repo_name)
                 if not repo:
-                    logging.info(
+                    if self.create_repo:
+                        logging.info(
                         "Repository '%s' does not exist. Creating it...", repo_name
-                    )
-                    self.stats.create_repo(repo_name)
-                    if not self.dry_run:
-                        try:
-                            repo = self.org.create_repo(
-                                name=repo_name,
-                                description="Managed by github-org-manager",
-                                private=True,
-                                has_issues=True,
-                                auto_init=True,
-                            )
-                            existing_repo_names[repo_name] = repo
-                        except GithubException as exc:
-                            logging.critical(
-                                "Failed to create repository '%s': %s",
-                                repo_name,
-                                dict_to_pretty_string(exc.data),
-                            )
-                            continue
+                        )
+                        self.stats.create_repo(repo_name)
+
+                        if not self.dry_run:
+                            try:
+                                repo = self.org.create_repo(
+                                    name=repo_name,
+                                    description="Managed by github-org-manager",
+                                    private=True,
+                                    has_issues=True,
+                                    auto_init=True,
+                                )
+                                existing_repo_names[repo_name] = repo
+                            except GithubException as exc:
+                                logging.critical(
+                                    "Failed to create repository '%s': %s",
+                                    repo_name,
+                                    dict_to_pretty_string(exc.data),
+                                )
+                                continue
+                        else:
+                            continue  # skip permission change if repo not created
                     else:
-                        continue  # skip permission change if repo not created
+                        logging.warning(
+                            "Repository '%s' does not exist and create_repo=false. Skipping assignment.",
+                            repo_name,
+                        )
+                        continue
 
                 if perm != self.current_repos_teams.get(repo, {}).get(team):
                     if team not in team_changelist:

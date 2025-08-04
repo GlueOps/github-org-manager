@@ -1,11 +1,11 @@
 [tool.poetry]
 name = "github-org-manager"
-version = "0.7.3"
+version = "0.10.1"
 description = "Manage a GitHub Organization, its teams, repository permissions, and more"
-authors = ["Max Mehl <max.mehl@deutschebahn.com>"]
+authors = ["Max Mehl <max.mehl@deutschebahn.com>", "Alanis "]
 readme = "README.md"
 license = "Apache-2.0"
-repository = "https://github.com/OpenRailAssociation/github-org-manager"
+repository = "https://github.com/GlueOps/github-org-manager"
 keywords = ["github", "github-management", "permissions", "access-control"]
 classifiers = [
   "Development Status :: 5 - Production/Stable",
